@@ -1,0 +1,8 @@
+{{ user.name }},
+
+A new github {{ item.type }} has been created that matched "{{ match }}".
+
+"{{ item.title }}" was created by {{ item.user }} and is currently {% if item.assignee %}assigned to {{ item.assignee }}{% else %}unassigned{% endif %}.
+
+{{ item.url }}
+

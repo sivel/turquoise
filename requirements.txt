@@ -1,0 +1,9 @@
+Flask==0.10.1
+Flask-OAuth==0.12
+gevent==1.0.1
+GitHub-Flask==2.0.1
+happymongo==0.1.1
+Jinja2==2.7.3
+PyGithub==1.25.2
+pymongo==2.8
+requests==2.6.2
