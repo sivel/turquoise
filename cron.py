@@ -69,52 +69,34 @@ class Turquoise(object):
         return self._config
 
     def _fetch_repo(self, repo, results):
-        for pull in repo.get_pulls():
-            details = {
-                'repo': repo.full_name,
-                'number': pull.number,
-                'url': pull.html_url,
-                'title': pull.title,
-                'assignee': (pull.assignee.login if pull.assignee
-                             else None),
-                'user': pull.user.login,
-                'blobs': [pull.title, pull.body],
-                'files': [],
-                'type': 'pull request',
-            }
-
-            for pull_file in pull.get_files():
-                details['files'].append(pull_file.filename)
-
-            for comment in pull.get_comments():
-                details['blobs'].append(comment.body)
-
-            # I'm not totally sure this is useful, so disabling as it get's us
-            # back a lot of API requests
-            # for commit in pull.get_commits():
-            #     details['blobs'].append(commit.commit.message)
-
-            for comment in pull.get_issue_comments():
-                details['blobs'].append(comment.body)
-
-            results[repo.full_name].append(details)
-
         for issue in repo.get_issues():
-            if issue.pull_request is not None:
-                continue
-
             details = {
                 'repo': repo.full_name,
                 'number': issue.number,
                 'url': issue.html_url,
                 'title': issue.title,
-                'assignee': (issue.assignee.login if pull.assignee
+                'assignee': (issue.assignee.login if issue.assignee
                              else None),
                 'user': issue.user.login,
                 'blobs': [issue.title, issue.body],
                 'files': [],
                 'type': 'issue',
             }
+
+            if issue.pull_request:
+                details['type'] = 'pull request'
+
+                pull = repo.get_pull(issue.number)
+                for pull_file in pull.get_files():
+                    details['files'].append(pull_file.filename)
+
+                for comment in pull.get_comments():
+                    details['blobs'].append(comment.body)
+
+                # I'm not totally sure this is useful, so disabling as it
+                # get's us back a lot of API requests
+                # for commit in pull.get_commits():
+                #     details['blobs'].append(commit.commit.message)
 
             for comment in issue.get_comments():
                 details['blobs'].append(comment.body)
