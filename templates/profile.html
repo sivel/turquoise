@@ -51,6 +51,19 @@
                                 </ul>
                             </p>
                         </div>
+                        <div>
+                            <h2>Sent Notifications</h2>
+                            <p class="help-block">The 10 most recent GitHub issues/pull requests for each repository are listed below</p>
+                            {% for repo in repos %}
+                            <h4><a href="https://github.com/{{ repo }}">{{ repo }}</a></h4>
+                            <ul>
+                            {% for item in (g.user.notified[repo]|reverse|list)[:10] %}
+                                <li><a href="https://github.com/{{ repo }}/issues/{{ item }}">{{ item }}</a></li>
+                            {% endfor %}
+                            </ul>
+                            {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
