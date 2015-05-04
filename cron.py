@@ -12,6 +12,8 @@ from github import Github
 from fnmatch import fnmatch
 from happymongo import HapPyMongo
 from collections import defaultdict
+from github.PullRequest import PullRequest
+from github.GithubObject import _ValuedAttribute
 from jinja2 import Environment, FileSystemLoader
 
 try:
@@ -83,23 +85,26 @@ class Turquoise(object):
                 'type': 'issue',
             }
 
+            # for comment in issue.get_comments():
+            #     details['blobs'].append(comment.body)
+
             if issue.pull_request:
                 details['type'] = 'pull request'
 
-                pull = repo.get_pull(issue.number)
+                pull = PullRequest(repo._requester, {}, {}, completed=True)
+                pull._url = _ValuedAttribute('%s/%s/%s' % (repo.url, 'pulls',
+                                                           issue.number))
+
                 for pull_file in pull.get_files():
                     details['files'].append(pull_file.filename)
 
-                for comment in pull.get_comments():
-                    details['blobs'].append(comment.body)
+                # for comment in pull.get_comments():
+                #     details['blobs'].append(comment.body)
 
                 # I'm not totally sure this is useful, so disabling as it
                 # get's us back a lot of API requests
                 # for commit in pull.get_commits():
                 #     details['blobs'].append(commit.commit.message)
-
-            for comment in issue.get_comments():
-                details['blobs'].append(comment.body)
 
             results[repo.full_name].append(details)
 
