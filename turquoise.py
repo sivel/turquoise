@@ -45,7 +45,7 @@ def login_required(f):
     def wrapped(*args, **kwargs):
         user_id = session.get('user_id')
         if not user_id:
-            return redirect(url_for('login', next=request.url))
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     return wrapped
 
@@ -79,9 +79,9 @@ def authorized(oauth_token):
         flash('Authorization failed.', 'danger')
         return redirect('index')
 
-    user = db.users.find_one({'github_access_token': oauth_token})
-    if not user:
-        user = {
+    g.user = db.users.find_one({'github_access_token': oauth_token})
+    if not g.user:
+        g.user = {
             'github_access_token': oauth_token,
             'regex': '',
             'files': [],
@@ -91,20 +91,19 @@ def authorized(oauth_token):
         details = github.get('user')
         existing = db.users.find_one({'login': details['login']})
         if not existing:
-            user['_id'] = db.users.insert(user, manipulate=True)
+            g.user['_id'] = db.users.insert(user, manipulate=True)
         else:
             existing['github_access_token'] = oauth_token
             db.users.update({'_id': existing['_id']},
                             {'$set': existing})
-            user = existing
+            g.user = existing
+    else:
+        details = github.get('user')
+        g.user.update(details)
+        db.users.update({'_id': bson.ObjectId(user['_id'])},
+                        {'$set': details})
 
-    g.user = user
-    details = github.get('user')
-    g.user.update(details)
-    db.users.update({'_id': bson.ObjectId(user['_id'])},
-                    {'$set': details})
-
-    session['user_id'] = str(user['_id'])
+    session['user_id'] = str(g.user['_id'])
     return redirect(url_for('profile'))
 
 
