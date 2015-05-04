@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import re
+import bson
+import logging
 
-from flask import (Flask, session, g, request, url_for, redirect, flash,
-                   render_template)
-from flask.ext.github import GitHub
 from functools import wraps
 from happymongo import HapPyMongo
-import bson
+from flask.ext.github import GitHub
+from flask import (Flask, session, g, request, url_for, redirect, flash,
+                   render_template, abort)
 
 try:
     from cPickle import dumps as pickle_dumps
@@ -47,6 +48,18 @@ def login_required(f):
             return redirect(url_for('login', next=request.url))
         return f(*args, **kwargs)
     return wrapped
+
+
+@app.before_first_request
+def logger():
+    app.logger.addHandler(logging.StreamHandler())
+    app.logger.setLevel(logging.INFO)
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    app.logger.exception(e)
+    return abort(500)
 
 
 @app.route('/')
