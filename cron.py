@@ -177,6 +177,9 @@ class Turquoise(object):
             notified = user['notified']
             for repo, items in results.iteritems():
                 for item in items:
+                    if not user['self_notify'] and item['user'] == user['login']:
+                        continue
+
                     if item['number'] in notified.get(item['repo'], []):
                         continue
 

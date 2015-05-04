@@ -13,8 +13,11 @@
                         <h4>{{ g.user.login }}</h3>
                         <div>
                             <br>
-                            <h4>Extra Contact</h4>
                             <form action="{{ url_for('contact') }}" method="post">
+                                <h4>Self Notify</h4>
+                                <p class="help-block">Do you want to be notified for your own issues and pull requests?</p>
+                                <input type="checkbox" name="self_notify"> Self Notify?
+                                <h4>Extra Contact</h4>
                                 <p class="help-block">An extra email address to notify other than your registered GitHub email address</p>
                                 <p><input type="text" id="contact" name="contact" class="form-control mono" value="{{ g.user.extra_contact }}"></p>
                                 <p><button class="btn btn-primary" id="update">Update</button></p>

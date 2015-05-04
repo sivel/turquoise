@@ -103,8 +103,12 @@ def profile():
 @app.route('/profile/contact', methods=['POST'])
 @login_required
 def contact():
+    partial = {
+        'extra_contact': request.form.get('contact'),
+        'self_notify': bool(request.form.get('self_notify'))
+    }
     db.users.update({'_id': bson.ObjectId(session['user_id'])},
-                    {'$set': {'extra_contact': request.form.get('contact')}})
+                    {'$set': partial})
     return redirect(url_for('profile'))
 
 
