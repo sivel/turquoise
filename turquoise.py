@@ -88,7 +88,15 @@ def authorized(oauth_token):
             'notified': {},
             'extra_contact': '',
         }
-        user['_id'] = db.users.insert(user, manipulate=True)
+        details = github.get('user')
+        existing = db.users.find_one({'login': details['login']})
+        if not existing:
+            user['_id'] = db.users.insert(user, manipulate=True)
+        else:
+            existing['github_access_token'] = oauth_token
+            db.users.update({'_id': existing['_id']},
+                            {'$set': existing})
+            user = existing
 
     g.user = user
     details = github.get('user')
