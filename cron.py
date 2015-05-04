@@ -172,7 +172,7 @@ class Turquoise(object):
 
         users = self._db.users.find()
         for user in users:
-            regex = unpickle(user['regex'])
+            regex = unpickle(user.get('regex'))
             files = user['files']
             notified = user['notified']
             for repo, items in results.iteritems():
