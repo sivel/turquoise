@@ -91,7 +91,7 @@ def authorized(oauth_token):
         details = github.get('user')
         existing = db.users.find_one({'login': details['login']})
         if not existing:
-            g.user['_id'] = db.users.insert(user, manipulate=True)
+            g.user['_id'] = db.users.insert(g.user, manipulate=True)
         else:
             existing['github_access_token'] = oauth_token
             db.users.update({'_id': existing['_id']},
@@ -100,7 +100,7 @@ def authorized(oauth_token):
     else:
         details = github.get('user')
         g.user.update(details)
-        db.users.update({'_id': bson.ObjectId(user['_id'])},
+        db.users.update({'_id': bson.ObjectId(g.user['_id'])},
                         {'$set': details})
 
     session['user_id'] = str(g.user['_id'])
