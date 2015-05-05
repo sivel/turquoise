@@ -193,7 +193,7 @@ class Turquoise(object):
                     except TurquoiseBreak:
                         continue
 
-                    if not isinstance(regex, basestring):
+                    if not isinstance(regex, basestring) and regex.pattern:
                         try:
                             for blob in item['blobs']:
                                 if regex.search(blob):
