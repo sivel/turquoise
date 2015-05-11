@@ -60,7 +60,7 @@
                             {% for repo in repos %}
                             <h4><a href="https://github.com/{{ repo }}">{{ repo }}</a></h4>
                             <ul>
-                            {% for item in (g.user.notified[repo]|reverse|list)[:10] %}
+                            {% for item in (g.user.notified[repo]|default([]))[-10:]|map('int')|list %}
                                 <li><a href="https://github.com/{{ repo }}/issues/{{ item }}">{{ item }}</a></li>
                             {% endfor %}
                             </ul>
